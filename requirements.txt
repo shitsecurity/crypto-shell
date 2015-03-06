@@ -1,0 +1,7 @@
+requests
+sqlalchemy
+straight.plugin
+jinja2
+python-geoip-geolite2
+lxml
+iptools

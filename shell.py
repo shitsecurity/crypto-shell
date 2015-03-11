@@ -54,10 +54,12 @@ class Shell( cli.Cli ):
 		self.handler = SessionHandler()
 		self.handler.fetch_session( name=default_session )
 
-	@staticmethod
-	def run():
+	@classmethod
+	def spawn( cls ): cls().run()
+
+	def run( self ):
 		try:
-			Shell().cmdloop()
+			self.cmdloop()
 		except (SystemExit,KeyboardInterrupt):
 			print '\n\n {}Hack the planet!{}\n'.format(color.GREEN,color.NORMAL)
 
@@ -138,7 +140,7 @@ class Shell( cli.Cli ):
 			print self.pprint(marker='!').format( msg )
 			return
 		self.set_prompt( module=module )
-		self.modules[ self.get_module() ].run( self )
+		self.modules[ self.get_module() ].spawn( self )
 		self.set_prompt( module='~' )
 
 	def help_use( self ):
@@ -169,4 +171,4 @@ class Shell( cli.Cli ):
 		return self.default_complete(text, line, lambda: ['on','off'])
 
 if __name__ == "__main__":
-	Shell.run()
+	Shell.spawn()

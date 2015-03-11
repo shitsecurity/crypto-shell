@@ -323,7 +323,9 @@ class Manager( Module,  ):
 			msg = 'Shell {} not found'.format(  uniq )
 			print self.pprint(marker='!').format( msg )
 			return
-		transport.shell.Connect.run( shell, self )
+		rsh = transport.shell.Connect( shell, self )
+		print rsh.hello()
+		rsh.run()
 		self.db.update_checked( shell )
 
 	def complete_connect( self, text, line, b_index, e_index ):

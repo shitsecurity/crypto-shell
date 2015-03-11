@@ -6,8 +6,11 @@ import shlex
 
 from cli import color
 from modules.module import Module
+from lib.process import call
+from lib.io import write_file, read_file, escape
 from lib.shell.session import Session, cmds as hello
 
+from tempfile import NamedTemporaryFile
 from collections import OrderedDict
 
 class Connect( Module ):
@@ -17,6 +20,7 @@ class Connect( Module ):
 	options = OrderedDict()
 
 	options['dir'] = '~'
+	options['editor'] = 'vim'
 	options['user-agent'] = 'Mozilla/5.0'
 	
 	_prompt_ = '{blue}.::{cyan}{domain}{purple}@{cyan}{ip}' \
@@ -29,16 +33,26 @@ class Connect( Module ):
 						path=self.env.get('dir','~') )
 		self.transport = Session( shell.url, shell.key, action=shell.action )
 		self.transport.user_agent = self.env.get('user-agent','Mozilla/5.0')
-		print self.transport(hello)
+
+	def hello( self ):
+		return self.execute(hello)
+
+	def execute( self, cmds ):
+		return self.transport( filter( None, cmds ))
+
+	def cwd( self ):
+		if self.env.get('dir','~')!='~':
+			return 'cd {}'.format( self.env['dir'] )
+
+	def execute_one( self, cmd ):
+		return self.execute([ self.cwd(), cmd ])
 
 	def default( self, line ):
 		if line.strip()=='':
 			return
-		cmds = []
-		if self.env.get('dir','~')!='~':
-			cmds.append('cd {}'.format( self.env['dir'] ))
-		cmds.append(line)
-		print '{}{}{}'.format(color.GREEN, self.transport(cmds), color.NORMAL)
+		result = self.execute_one(line)
+		if result:
+			print '{}{}{}'.format(color.GREEN, result, color.NORMAL)
 
 	def onecmd( self, line ):
 		if line.startswith('@'):
@@ -46,7 +60,7 @@ class Connect( Module ):
 		elif line.strip()=='EOF':
 			sys.exit()
 		else:
-			return self.default( line )
+			self.default( line )
 
 	def completenames(self, text, *ignored):
 		dotext = 'do_'+text
@@ -76,6 +90,46 @@ class Connect( Module ):
 		self.env['dir'] = path
 		self.set_prompt(path=path)
 
-	# XXX @download
-	# XXX @upload
+	def help_download( self ):
+		print ' Usage: download [remote] [local]'
+
+	def do_download( self, line ):
+		args = shlex.split( line )
+		if len(args) not in [1,2]:
+			self.help_download()
+			return
+		remote = args[0]
+		local = args[1] if len(args)==2 else os.path.basename(remote)
+		write_file(local,self.execute_one('cat {}'.format(remote)))
+
+	def help_upload( self ):
+		print ' Usage: upload [local] [remote]'
+
+	def do_upload( self, line ):
+		args = shlex.split( line )
+		if len(args) not in [1,2]:
+			self.help_download()
+			return
+		local = args[0]
+		remote = args[1] if len(args)==2 else os.path.basename(local)
+		self.execute_one('echo "{}" > {}'.format(escape(read_file(local)),remote))
+
+	def help_edit( self ):
+		print ' Usage: edit [file]'
+
+	def do_edit( self, line ):
+		args = shlex.split(line)
+		file = args[0] if len(args)==1 else None
+		if not file:
+			self.help_edit()
+			return
+		original = self.execute_one('cat {}'.format(file))
+		tmpfile = NamedTemporaryFile(suffix=file.split('.')[-1])
+		write_file( tmpfile.name, original )
+		os.system('{} {}'.format( self.env['editor'], tmpfile.name ))
+		mod = read_file( tmpfile.name )
+		tmpfile.close()
+		if original!=mod:
+			self.execute_one('echo "{}" > {}'.format(escape(mod),file))
+
 	# XXX @script

@@ -31,9 +31,11 @@ class Module( Cli ):
 	required = []
 
 	@classmethod
-	def run( cls, *args, **kwargs ):
+	def spawn( cls, *args, **kwargs ): cls( *args, **kwargs ).run()
+	
+	def run( self ):
 		try:
-			cls( *args, **kwargs ).cmdloop()
+			self.cmdloop()
 		except (SystemExit,KeyboardInterrupt):
 			print ''
 

@@ -19,7 +19,7 @@ from lib.io import write_file
 from urlparse import urlparse
 from collections import OrderedDict
 
-class Manager( Module,  ):
+class Manager( Module ):
 
 	__module__ = 'shell'
 

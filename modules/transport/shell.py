@@ -5,6 +5,7 @@ import sys
 import shlex
 
 from cli import color
+from cli.cli import InteractiveMixin
 from modules.module import Module
 from lib.process import call
 from lib.io import write_file, read_file, escape
@@ -13,7 +14,7 @@ from lib.shell.session import Session, cmds as hello
 from tempfile import NamedTemporaryFile
 from collections import OrderedDict
 
-class Connect( Module ):
+class Connect( InteractiveMixin, Module ):
 
 	__module__ = 'transport.web'
 
@@ -47,31 +48,8 @@ class Connect( Module ):
 	def execute_one( self, cmd ):
 		return self.execute([ self.cwd(), cmd ])
 
-	def default( self, line ):
-		if line.strip()=='':
-			return
-		result = self.execute_one(line)
-		if result:
-			print '{}{}{}'.format(color.GREEN, result, color.NORMAL)
-
-	def onecmd( self, line ):
-		if line.startswith('@'):
-			return super( Connect, self ).onecmd( line.lstrip('@') )
-		elif line.strip()=='EOF':
-			sys.exit()
-		else:
-			self.default( line )
-
-	def completenames(self, text, *ignored):
-		dotext = 'do_'+text
-		return ['@'+a[3:] for a in self.get_names() if a.startswith(dotext)]
-
-	def complete(self, text, *args, **kwargs ):
-		return super(Connect,self).complete(text.lstrip('@'),*args,**kwargs)
-
-	def completedefault( self, text, line, b_index, e_index ):
-		args = shlex.split(line)
-		return getattr(self, 'complete_' + args[0].lstrip('@'))( text, line, b_index, e_index )
+	def default_action( self, line ):
+		return self.execute_one( line )
 
 	def help_cd( self ):
 		print ' Usage: cd [dir]'
@@ -124,7 +102,7 @@ class Connect( Module ):
 			self.help_edit()
 			return
 		original = self.execute_one('cat {}'.format(file))
-		tmpfile = NamedTemporaryFile(suffix=file.split('.')[-1])
+		tmpfile = NamedTemporaryFile(suffix=os.path.splitext(file)[1])
 		write_file( tmpfile.name, original )
 		os.system('{} {}'.format( self.env['editor'], tmpfile.name ))
 		mod = read_file( tmpfile.name )

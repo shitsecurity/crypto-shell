@@ -120,3 +120,36 @@ class Cli( cmd.Cmd, pprint.PPrint ):
 			complete = None
 		if complete is not None:
 			return [ _ for _ in map(str,f()) if _.startswith(complete) ]
+
+class InteractiveMixin( object ):
+
+	def default( self, line ):
+		if line.strip()=='':
+			return
+		result = self.default_action(line)
+		if result:
+			print '{}{}{}'.format(color.GREEN, result, color.NORMAL)
+
+	def onecmd( self, line ):
+		if line.startswith('@'):
+			return super( InteractiveMixin, self ).onecmd( line.lstrip('@') )
+		elif line.strip()=='EOF':
+			sys.exit()
+		else:
+			self.default( line )
+
+	def completenames(self, text, *ignored):
+		dotext = 'do_'+text
+		return ['@'+a[3:] for a in self.get_names() if a.startswith(dotext)]
+
+	def complete(self, text, *args, **kwargs ):
+		return super( InteractiveMixin, self ).complete(text.lstrip('@'),
+														*args,
+														**kwargs)
+
+	def completedefault( self, text, line, b_index, e_index ):
+		args = shlex.split(line)
+		return getattr( self, 'complete_'+args[0].lstrip('@') )(text,
+																line,
+																b_index,
+																e_index)

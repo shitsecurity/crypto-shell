@@ -12,3 +12,14 @@ def read_file( file ):
 
 def escape( data, symbol='"' ): 
 	return data.replace('\\','\\\\').replace(symbol,'\\{}'.format(symbol))
+
+def get_script_dir():
+	return os.path.abspath(os.path.join(os.path.dirname(__file__),
+										'..',
+										'scripts'))
+
+def load_script( name ):
+	return read_file( os.path.join( get_script_dir(), '{}.sh'.format( name )))
+
+def load_script_names():
+	return [ os.path.splitext(_)[0] for _ in os.listdir(get_script_dir()) ]

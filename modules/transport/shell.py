@@ -8,7 +8,7 @@ from cli import color
 from cli.cli import InteractiveMixin
 from modules.module import Module
 from lib.process import call
-from lib.io import write_file, read_file, escape
+from lib.io import write_file, read_file, escape, load_script, load_script_names
 from lib.shell.session import Session, cmds as hello
 
 from tempfile import NamedTemporaryFile
@@ -72,6 +72,7 @@ class Connect( InteractiveMixin, Module ):
 		print ' Usage: download [remote] [local]'
 
 	def do_download( self, line ):
+		'''download file'''
 		args = shlex.split( line )
 		if len(args) not in [1,2]:
 			self.help_download()
@@ -84,7 +85,9 @@ class Connect( InteractiveMixin, Module ):
 		print ' Usage: upload [local] [remote]'
 
 	def do_upload( self, line ):
+		'''upload file'''
 		args = shlex.split( line )
+		'''upload file'''
 		if len(args) not in [1,2]:
 			self.help_download()
 			return
@@ -96,6 +99,7 @@ class Connect( InteractiveMixin, Module ):
 		print ' Usage: edit [file]'
 
 	def do_edit( self, line ):
+		'''edit file'''
 		args = shlex.split(line)
 		file = args[0] if len(args)==1 else None
 		if not file:
@@ -110,4 +114,26 @@ class Connect( InteractiveMixin, Module ):
 		if original!=mod:
 			self.execute_one('echo "{}" > {}'.format(escape(mod),file))
 
-	# XXX @script
+	def help_script( self ):
+		print ' Usage: script [name]'
+
+	def do_script( self, line ):
+		'''execute script'''
+		args = shlex.split( line )
+		name = args[0] if len(args)==1 else None
+		if not name:
+			self.help_script()
+			return
+		try:
+			script = load_script(name)
+		except IOError:
+			msg = 'Invalid script name {}'.format( name )
+			print self.pprint(marker='!').format( msg )
+			return
+		cmds = [self.cwd(),] + \
+				filter( lambda _: _ and not _.strip().startswith('#'),
+						script.split('\n'))
+		print self.execute(cmds)
+
+	def complete_script( self, text, line, b_index, e_index ):
+		return self.default_complete( text, line, load_script_names )

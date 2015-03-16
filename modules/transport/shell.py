@@ -115,25 +115,31 @@ class Connect( InteractiveMixin, Module ):
 			self.execute_one('echo "{}" > {}'.format(escape(mod),file))
 
 	def help_script( self ):
-		print ' Usage: script [name]'
+		print ' Usage: script [name] [outfile]'
 
 	def do_script( self, line ):
 		'''execute script'''
 		args = shlex.split( line )
-		name = args[0] if len(args)==1 else None
-		if not name:
+		if len(args) not in [1,2]:
 			self.help_script()
 			return
+		name = args[0]
+		outfile = args[1] if len(args)==2 else None
 		try:
 			script = load_script(name)
 		except IOError:
 			msg = 'Invalid script name {}'.format( name )
 			print self.pprint(marker='!').format( msg )
 			return
-		cmds = [self.cwd(),] + \
-				filter( lambda _: _ and not _.strip().startswith('#'),
+		cmds = [ self.cwd(), ] + self.script_to_cmds(script)
+		output = self.execute(cmds)
+		if outfile:
+			write_file(outfile,output)
+		print output
+
+	def script_to_cmds( self, script ):
+		return filter( lambda _: _ and not _.strip().startswith('#'),
 						script.split('\n'))
-		print self.execute(cmds)
 
 	def complete_script( self, text, line, b_index, e_index ):
 		return self.default_complete( text, line, load_script_names )

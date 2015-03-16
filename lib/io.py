@@ -16,6 +16,7 @@ def escape( data, symbol='"' ):
 def get_script_dir():
 	return os.path.abspath(os.path.join(os.path.dirname(__file__),
 										'..',
+										'data',
 										'scripts'))
 
 def load_script( name ):

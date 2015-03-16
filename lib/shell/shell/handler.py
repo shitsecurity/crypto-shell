@@ -13,7 +13,7 @@ def php_exec( cmd ):
 	elif cmd == 'cwd':
 		return "echo \".getcwd().\""
 
-	return cmd.replace('\\','\\\\').replace('"','\\\"')
+	return cmd.replace('\\','\\\\').replace('"','\\\"').replace('$','\\$')
 
 def php_system( cmd ):
 	return 'system("{}");'.format( cmd )

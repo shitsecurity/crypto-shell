@@ -143,9 +143,11 @@ class InteractiveMixin( object ):
 		return ['@'+a[3:] for a in self.get_names() if a.startswith(dotext)]
 
 	def complete(self, text, *args, **kwargs ):
-		return super( InteractiveMixin, self ).complete(text.lstrip('@'),
-														*args,
-														**kwargs)
+		line = readline.get_line_buffer().strip()
+		if line.startswith('@') or line.strip()=='':
+			return super( InteractiveMixin, self ).complete(text.strip('@'),
+															*args,
+															**kwargs)
 
 	def completedefault( self, text, line, b_index, e_index ):
 		args = shlex.split(line)

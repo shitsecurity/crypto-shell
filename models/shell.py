@@ -12,6 +12,7 @@ class Shell( Base ):
 	session = Column( String, nullable=False, index=True )
 
 	id = Column( Integer, primary_key=True )
+	file = Column( String )
 	domain = Column( String, index=True )
 	url = Column( String )
 	key = Column( String, nullable=False )

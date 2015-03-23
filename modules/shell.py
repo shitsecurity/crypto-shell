@@ -30,6 +30,7 @@ class Manager( Module ):
 	options['action']   = 'PHPSESSID'
 	options['strength'] = 16
 	options['alias']    = None
+	options['file']     = None
 	options['comment']  = None
 	options['outfile']  = None
 	options['cryptor']  = 'b64.php'
@@ -61,11 +62,15 @@ class Manager( Module ):
 			return
 
 		url = self.env.get('url')
-		if url is not None and not url.startswith('http'):
-			url = 'http://{}'.format( url )
-			domain = urlparse(url).netloc
+		if url is not None:
+			if not url.startswith('http'):
+				url = 'http://{}'.format( url )
+			parsed_url = urlparse(url)
+			domain = parsed_url.netloc
+			file = parsed_url.path.split('/')[-1]
 		else:
 			domain = None
+			file = None
 
 		strength = self.env.get('strength')
 		key = self.env.get('key') or create_key(strength)
@@ -84,11 +89,13 @@ class Manager( Module ):
 		comment = self.env.get('comment')
 		outfile = self.env.get('outfile')
 		if outfile is not None: write_file( outfile, shellcode )
+		file = self.env.get('file') or file
 
 		shell = Shell( domain=domain,
 						url=url,
 						key=key,
 						action=action,
+						file=file,
 						comment=comment,
 						alias=alias,
 						shellcode=shellcode )
@@ -198,18 +205,19 @@ class Manager( Module ):
 		return self.default_complete( text, line, self.db.get_uniq )
 
 	def help_url( self ):
-		print ' Usage: url [id|alias] [url]'
+		print ' Usage: url [id|alias] [url] [file]'
 
 	def do_url( self, line ):
 		'''set url for shell'''
 		args = shlex.split( line )
-		if len(args)!=2:
+		if len(args) not in [2,3]:
 			self.help_url()
 			return
 		uniq = args[0]
 		url = args[1]
+		file = args[2] if len(args)==3 else None
 		try:
-			self.db.update_url( self.db.get_shell_by_uniq( param=uniq ), url )
+			self.db.update_url(self.db.get_shell_by_uniq(param=uniq),url,file)
 		except exceptions.NoResultFound:
 			msg = 'Shell {} not found'.format( uniq )
 			print self.pprint(marker='!').format( msg )

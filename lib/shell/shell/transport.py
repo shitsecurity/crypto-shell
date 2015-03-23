@@ -4,12 +4,16 @@ import os
 import zlib
 import random
 
+from requests.adapters import HTTPAdapter
 from requests import exceptions, Session as RequestsSession
+
+import logging
 
 class Session( RequestsSession ):
 
 	def __init__( self, *args, **kwargs ):
 		super( Session, self ).__init__( *args, **kwargs )
+		self.mount('http',HTTPAdapter())
 		self.headers['User-Agent'] = user_agent()
 
 def user_agent():
@@ -65,16 +69,29 @@ def query(  url,
 			session=None,
 			action='PHPSESSID',
 			encoder=std_encoder,
-			decoder=std_decoder ):
+			decoder=std_decoder,
+			via='cookie' ):
 
+	method = 'get'
 	session = session or Session()
 	payload = encoder( cmd, key )
-	cookies = { action: payload }
-	response = session.request( method='get',
+	cookies = {}
+	headers = {}
+	data = None
+
+	if via=='cookie':
+		cookies[action]=payload
+	elif via=='post':
+		method = 'post'
+		headers['Content-Type']='application/x-www-form-urlencoded'
+		data = payload
+
+	response = session.request( method=method,
 								url=url,
+								headers=headers,
 								cookies=cookies,
-								data=None,
-								timeout=30,
+								data=data,
+								timeout=300,
 								verify=False,
 								allow_redirects=True )
 	return decoder( response.text, key ).strip()

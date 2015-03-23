@@ -78,10 +78,12 @@ class ShellHandler( SQLiteHandler, PPrint ):
 		shell.alias = None
 		self.db.commit()
 
-	def update_url( self, shell, url ): # XXX
+	def update_url( self, shell, url, file=None ): # XXX
 		if not url.startswith('http'): url = 'http://' + url
 		shell.url = url
-		domain = urlparse( url ).netloc
+		parsed_url = urlparse( url )
+		domain = parsed_url.netloc
+		shell.file = file or parsed_url.path.split('/')[-1]
 		shell.domain = domain
 
 		try:

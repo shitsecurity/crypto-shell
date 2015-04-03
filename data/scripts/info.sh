@@ -1,66 +1,69 @@
-echo '----[Host]----------------------------------------------------------------------'
+header() { printf "    X%*s\n" $((76 - ${#1})) ''|tr ' ' '-'|sed -e "s/X/$1/"; }
+lb() { echo ''; }
+
+header '[Host]'
 uname -a
 
-echo ''
-echo '----[Shell]---------------------------------------------------------------------'
+lb
+header 'Shell'
 echo $$DOC_ROOT$$SHELL_FILE
 
-echo ''
-echo '----[Priv]----------------------------------------------------------------------'
+lb
+header 'Priv'
 id
 
-echo ''
-echo '----[Uptime]--------------------------------------------------------------------'
+lb
+header 'Uptime'
 uptime|sed -e 's/ //'
 
-echo ''
-echo '----[Memory]--------------------------------------------------------------------'
+lb
+header 'Memory'
 free -m
 
-echo ''
-echo '----[Disk]----------------------------------------------------------------------'
+lb
+header 'Disk'
 df -H
 
-echo ''
-echo '----[Dir]-----------------------------------------------------------------------'
+lb
+header 'Dir'
 ls -ltr
 
-echo ''
-echo '----[Processes]-----------------------------------------------------------------'
+lb
+header 'Processes'
 for user in `who|cut -d' ' -f1`
 	do ps -u "$user" -o user,args,pid,ppid
 done
 
-echo ''
-echo '----[Networks]------------------------------------------------------------------'
+lb
+header 'Networks'
 `whereis ifconfig|awk '{print $2}'` -a|grep -E '^(\w|\s+inet|$)'|head -n -1
 
-echo ''
-echo '----[Routing]-------------------------------------------------------------------'
+lb
+header 'Routing'
 `whereis route|awk '{print $2}'` -n
 
-echo ''
-echo '----[ARP Cache]-----------------------------------------------------------------'
+lb
+header 'ARP Cache'
 `whereis arp|awk '{print $2}'` -n
 
-echo ''
-echo '----[TCP Connections]-----------------------------------------------------------'
+lb
+header 'TCP Connections'
 netstat -antp 2>/dev/null
 
-echo ''
-echo '----[Logged In]-----------------------------------------------------------------'
+lb
+header 'Logged In'
 w|tail -n +2
 
-echo ''
-echo '----[Last Login]----------------------------------------------------------------'
+lb
+header 'Last Login'
 lastlog|grep -vE 'Never'
 
 if [ -d /var/cache/apt/ ]
 then echo ''
-	echo '----[Last Update]---------------------------------------------------------------'
+	header 'Last Update'
 	stat -c %y /var/cache/apt/
 fi
 
-echo ''
-echo '----[Firewall]------------------------------------------------------------------'
+lb
+header 'Firewall'
 `whereis iptables|awk '{print $2}'` -L -t nat

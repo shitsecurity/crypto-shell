@@ -1,3 +1,5 @@
+echo "[*] kernel: `uname -a`"
+
 if [ -d /proc ]
 then echo '[+] /proc exists'
 	proc=true
@@ -27,7 +29,7 @@ fi
 
 if [ $skip = false ]
 then if [ $kptr -eq 0 ]
-		then echo '[+] /proc/kallsyms'
+		then echo '[+] /proc/kallsyms enabled'
 		else echo '[-] kallsyms disabled'
 	fi
 
@@ -45,7 +47,7 @@ then if [ $kptr -eq 0 ]
 fi
 
 for f in /boot/System.map-*
-do [ -e "$f" ] && echo "[+] system map" || echo "[-] system map"
+do [ -e "$f" ] && echo "[+] system map found" || echo "[-] system map hidden"
 	break
 done
 ls -l /boot/System.map-*|sed -r -e 's/\s+/ /g'|cut -d' ' -f1,3,4,6-

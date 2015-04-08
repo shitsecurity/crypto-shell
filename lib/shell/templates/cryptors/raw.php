@@ -1,0 +1,3 @@
+<?
+{{obfs.shellcode}}
+?>

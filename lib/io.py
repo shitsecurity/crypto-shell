@@ -13,8 +13,8 @@ def read_file( file ):
 	with open( os.path.abspath( os.path.expanduser( file )), 'rb' ) as fh:
 		return ''.join(fh.readlines()).strip()
 
-def escape( data, symbol='"' ): 
-	return data.replace('\\','\\\\').replace(symbol,'\\{}'.format(symbol))
+def escape( data, symbol='"' ):
+	return data.replace(symbol,'\\{}'.format(symbol))
 
 def get_script_dir():
 	return os.path.abspath(os.path.join(os.path.dirname(__file__),

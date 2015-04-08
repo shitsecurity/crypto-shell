@@ -1,8 +1,10 @@
-gcc -v | tail -n 1 2>/dev/null
-g++ -v | tail -n 1 2>/dev/null
-clang -v | head -n 1 2>/dev/null
-php -v | head -n 1 2>/dev/null
-perl -v | grep 'This is perl' | sed -e 's/This is //'
-python -V
-ruby -v
-printf 'node.js '; node -v
+p='[+]'
+gcc -v>/dev/null&&echo "$p gcc"
+clang -v>/dev/null&&echo "$p clang"
+php -v>/dev/null&&echo "$p php"
+perl -v>/dev/null&&echo "$p perl"
+python -V>/dev/null&&echo "$p python"
+ruby -v>/dev/null&&echo "$p ruby"
+node -v>/dev/null&&echo "$p node"
+nc -h>/dev/null&&echo "$p nc"
+echo|telnet>/dev/null&&echo "$p telnet"

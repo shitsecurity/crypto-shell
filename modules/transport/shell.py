@@ -121,7 +121,7 @@ class Connect( InteractiveMixin, Module ):
 			return
 		local = args[0]
 		remote = args[1] if len(args)==2 else os.path.basename(local)
-		self.execute_one('echo "{}" > {}'.format(escape(read_file(local)),remote))
+		self.execute_one("echo '{}'>{}".format(read_file(local), remote))
 
 	def help_edit( self ):
 		print ' Usage: edit [file]'
@@ -140,7 +140,7 @@ class Connect( InteractiveMixin, Module ):
 		mod = read_file( tmpfile.name )
 		tmpfile.close()
 		if original!=mod:
-			self.execute_one('echo "{}" > {}'.format(escape(mod),file))
+			self.execute_one("echo '{}'>{}".format(mod,file))
 
 	def help_script( self ):
 		print ' Usage: script [name] [outfile]'

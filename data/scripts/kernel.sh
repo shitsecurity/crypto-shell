@@ -47,7 +47,7 @@ then if [ $kptr -eq 0 ]
 fi
 
 for f in /boot/System.map-*
-do [ -e "$f" ] && echo "[+] system map found" || echo "[-] system map hidden"
+do [ -e "$f" ] && echo "[+] system map found" || echo "[-] system map not found"
 	break
 done
 ls -l /boot/System.map-*|sed -r -e 's/\s+/ /g'|cut -d' ' -f1,3,4,6-

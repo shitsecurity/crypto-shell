@@ -4,7 +4,7 @@ import logging
 import traceback
 
 from handler import SQLiteHandler
-from models.db import function as f, exceptions
+from models.db import function as f, exceptions, or_
 from models.shell import Shell
 
 from cli.pprint import PPrint
@@ -137,3 +137,45 @@ class ShellHandler( SQLiteHandler, PPrint ):
 	def update_checked( self, shell ):
 		shell.checked = datetime.now()
 		self.db.commit()
+
+	def _search_shells( self, **kwargs ): # fugly
+		query = self.db.query( Shell )
+		searchable = ['comment','domain','alias','country','active']
+		for k,mv in kwargs.iteritems():
+
+			if k not in searchable:
+				raise TypeError(k)
+
+			if k=='alias':
+				query = query.filter( or_(*[Shell.alias==_ for _ in
+											map(lambda _: _ if _.startswith('@')
+															else '@'+_,
+												map(str, mv))]) )
+
+			elif k=='country':
+				query = query.filter(or_(*[Shell.country=='{}'.format(_) for _ in mv]))
+
+			elif k=='comment':
+				query = query.filter(or_(*[Shell.comment.like('%{}%'.format(_)) for _ in mv]))
+
+			elif k=='domain':
+				domains = []
+				for v in mv:
+					frmt=str(v)
+					if frmt.startswith('*'):
+						frmt='%'+frmt[1:]
+					if frmt.endswith('*'):
+						frmt=frmt[:-1]+'%'
+					domains.append(frmt)
+				query = query.filter(or_(*[Shell.domain.like(_) for _ in domains]))
+
+			elif k=='active':
+				query = query.filter( or_(*[Shell.active==v for v in
+											map(lambda _ : True if _.lower()=='true'
+																else False,
+												mv)]) )
+
+		return self.in_session( query )
+
+	def search_shells( self, *args, **kwargs ):
+		return self._search_shells( *args, **kwargs ).all()

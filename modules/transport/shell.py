@@ -239,3 +239,15 @@ class Connect( InteractiveMixin, Module ):
 			suggestion = 'Try the values {}'.format(', '.join(options))
 			print self.pprint().format( suggestion )
 			return self.env['transport']
+
+	def do_clean( self, line ):
+		'''clean file'''
+		args = shlex.split(line)
+		if len(args) != 2:
+			self.help_clean()
+			return
+		str, file = args
+		self.execute_one("sed -i '/{str}/d' {file}".format( str=str, file=file ))
+
+	def help_clean( self ):
+		print ' Usage: clean [str] [file]'

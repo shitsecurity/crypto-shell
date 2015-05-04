@@ -5,3 +5,4 @@ jinja2
 python-geoip-geolite2
 lxml
 iptools
+gevent

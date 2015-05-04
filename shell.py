@@ -5,6 +5,8 @@
 @shitsecurity
 '''
 
+import lib.thread
+
 import os
 import shlex
 import socket

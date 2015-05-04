@@ -64,6 +64,12 @@ then echo ''
 	stat -c %y /var/cache/apt/
 fi
 
+if [ -d /var/cache/yum/ ]
+then echo ''
+	header 'Last Update'
+	stat -c %y /var/cache/yum/
+fi
+
 lb
 header 'Firewall'
 `whereis iptables|awk '{print $2}'` -L -t nat

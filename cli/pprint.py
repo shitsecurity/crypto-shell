@@ -4,6 +4,9 @@ import color
 
 class PPrint( object ):
 
+	def lprint( self, *args, **kwargs  ):
+		return self.pprint( *args, **kwargs ).lstrip()
+
 	def pprint( self, marker='*' ):
 		return ' {blue}[{purple}{marker}{blue}]{green} {{}}' \
 				.format(blue=color.BLUE,

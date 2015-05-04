@@ -97,10 +97,30 @@ class Cli( cmd.Cmd, pprint.PPrint ):
 
 	def colorify( self ): sys.stdout.write( color.GREEN )
 
+	def pipe( self, line ):
+		lines = line.split('|')
+		xargs = []
+		result = None
+		try:
+			for ii,line in enumerate(lines):
+				args = line.strip().split(' ',1)
+				action = args[0]
+				line = args[1] if len(args)==2 else ''
+				if ii: xargs = [result,]
+				result = getattr(self, 'do_'+action)(line,*xargs)
+		except AttributeError:
+			self.default( line )
+
+	def is_piped( self, line ):
+		return '|' in line
+
 	def onecmd( self, line ):
 		self.colorify()
 		try:
-			return cmd.Cmd.onecmd( self, line )
+			if self.is_piped( line ):
+				self.pipe( line )
+			else:
+				return cmd.Cmd.onecmd( self, line )
 		except SystemExit:
 			raise
 		except:

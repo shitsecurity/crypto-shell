@@ -52,7 +52,8 @@ class Shell( cli.Cli ):
 						session=default_session)
 		cli.Cli.__init__( self )
 		self.modules=dict([ ( _.__module__, _ )
-							for _ in load('modules', subclasses=module.Module)])
+							for _ in load('modules', subclasses=module.Module)
+							if '.' not in _.__module__ ])
 		self.handler = SessionHandler()
 		self.handler.fetch_session( name=default_session )
 

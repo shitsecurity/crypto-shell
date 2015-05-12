@@ -21,7 +21,6 @@ from lib.dict import mdict
 from urlparse import urlparse
 from collections import OrderedDict
 
-from cli.pipe import pipe
 from lib.thread import Pool, BoundedSemaphore
 from modules.transport.shell import Connect
 

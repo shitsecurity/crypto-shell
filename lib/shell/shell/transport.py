@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import re
 import zlib
 import random
 
@@ -94,7 +95,16 @@ def query(  url,
 								timeout=300,
 								verify=False,
 								allow_redirects=True )
-	return decoder( response.text, key ).strip()
+
+	data=''
+	extract = re.compile('[0-9a-f]{33,}')
+	for crypto in extract.findall(response.text):
+		try:
+			data = decoder( crypto, key ).strip()
+			break
+		except:
+			continue
+	return data
 
 def xor_gzip_encoder( payload, key ):
 	return encode(compress( payload ), key ).encode( 'hex' )

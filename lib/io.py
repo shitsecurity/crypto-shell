@@ -39,3 +39,6 @@ def load_eval( file ):
 
 def load_eval_names():
 	return os.listdir(get_eval_dir())
+
+def echo( data, escape="'"):
+	return data.replace(escape,'{esc}\\{esc}{esc}'.format(esc=escape))

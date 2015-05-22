@@ -7,7 +7,7 @@ import shlex
 from cli import color
 from cli.cli import InteractiveMixin
 from modules.module import Module
-from lib.io import write_file, read_file, escape
+from lib.io import write_file, read_file, escape, echo
 from lib.io import load_script, load_script_names
 from lib.io import load_eval, load_eval_names
 from lib.shell.session import Session
@@ -115,13 +115,12 @@ class Connect( InteractiveMixin, Module ):
 	def do_upload( self, line ):
 		'''upload file'''
 		args = shlex.split( line )
-		'''upload file'''
 		if len(args) not in [1,2]:
 			self.help_download()
 			return
 		local = args[0]
 		remote = args[1] if len(args)==2 else os.path.basename(local)
-		self.execute_one("echo '{}'>{}".format(read_file(local), remote))
+		self.execute_one("echo '{}'>{}".format(echo(read_file(local)), remote))
 
 	def help_edit( self ):
 		print ' Usage: edit [file]'
@@ -140,7 +139,7 @@ class Connect( InteractiveMixin, Module ):
 		mod = read_file( tmpfile.name )
 		tmpfile.close()
 		if original!=mod:
-			self.execute_one("echo '{}'>{}".format(mod,file))
+			self.execute_one("echo '{}'>{}".format(echo(mod),file))
 
 	def help_script( self ):
 		print ' Usage: script [name] [outfile]'

@@ -40,7 +40,7 @@ def remove_tags( payload, open, close ):
 	return payload.replace(open,'',1)[::-1].replace(close[::-1],'',1)[::-1]
 
 def remove_tags_php( payload ):
-	return remove_tags( payload, open='<?', close='?>' )
+	return remove_tags( payload, open='<?php ', close='?>' )
 
 def list_shells():
 	return os.listdir(shell_path())

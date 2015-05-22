@@ -22,7 +22,6 @@ from urlparse import urlparse
 from collections import OrderedDict
 
 from lib.thread import Pool, BoundedSemaphore
-from modules.transport.shell import Connect
 
 class Manager( Module ):
 
@@ -377,8 +376,8 @@ class Manager( Module ):
 		bs = BoundedSemaphore()
 
 		def execute_cmd( shell ):
-			sh = Connect( shell, self )
-			result = sh.execute_one(line)
+			rsh = transport.shell.Connect( shell, self )
+			result = rsh.execute_one(line)
 			with bs:
 				print self.lprint(marker='*').format(shell.alias or shell.id)
 				print result
@@ -399,8 +398,8 @@ class Manager( Module ):
 		bs = BoundedSemaphore()
 
 		def run_script( shell ):
-			sh = Connect( shell, self )
-			result = sh.script(line)
+			rsh = transport.shell.Connect( shell, self )
+			result = rsh.script(line)
 			with bs:
 				print self.lprint(marker='*').format(shell.alias or shell.id)
 				print result

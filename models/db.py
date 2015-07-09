@@ -11,15 +11,15 @@ Base = declarative_base()
 
 class DBSession( object ):
 
-	@property
-	@classmethod
-	def key( cls ):
-		return cls.__class__.__name__
+    @property
+    @classmethod
+    def key( cls ):
+        return cls.__class__.__name__
 
 class SQLite( DBSession ):
 
-	@staticmethod
-	def create():
-		engine=create_engine('sqlite:///shell.db')
-		Base.metadata.create_all(engine)
-		return sessionmaker(bind=engine)()
+    @staticmethod
+    def create():
+        engine=create_engine('sqlite:///shell.db')
+        Base.metadata.create_all(engine)
+        return sessionmaker(bind=engine)()

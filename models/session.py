@@ -7,10 +7,10 @@ from sqlalchemy.orm.exc import NoResultFound as NoResult
 
 class Session( Base ):
 
-	__tablename__ = 'session'
+    __tablename__ = 'session'
 
-	id = Column( Integer, primary_key=True )
-	name = Column( String, unique=True )
+    id = Column( Integer, primary_key=True )
+    name = Column( String, unique=True )
 
-	def __repr__ ( self ):
-		return "<Session {}>".format( self.name )
+    def __repr__ ( self ):
+        return "<Session {}>".format( self.name )

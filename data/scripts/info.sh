@@ -25,6 +25,10 @@ header 'Disk'
 df -H
 
 lb
+header 'Mount'
+mount
+
+lb
 header 'Dir'
 ls -ltr
 
@@ -58,16 +62,14 @@ lb
 header 'Last Login'
 lastlog|grep -vE 'Never'
 
+echo ''
+header 'Last Update'
 if [ -d /var/cache/apt/ ]
-then echo ''
-	header 'Last Update'
-	stat -c %y /var/cache/apt/
-fi
-
-if [ -d /var/cache/yum/ ]
-then echo ''
-	header 'Last Update'
-	stat -c %y /var/cache/yum/
+then echo 'apt:' `stat -c %y /var/cache/apt/`
+elif [ -d /var/cache/dnf/ ]
+then echo 'dnf:' `stat -c %y /var/cache/dnf/`
+elif [ -d /var/cache/yum/ ]
+then echo 'yum:' `stat -c %y /var/cache/yum/`
 fi
 
 lb

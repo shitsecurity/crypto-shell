@@ -1,79 +1,86 @@
 #!env/bin/python -i
 
-from shell.handler import php
+from shell.handler import mapping
 from shell.transport import query, Session as TransportSession
 from shell.transport import xor_gzip_encoder, xor_gzip_decoder
+from shell.transport import std_decoder, std_encoder
+from shell.transport import hex_decoder, hex_encoder
 
 from urlparse import urlparse
 
 class Session( object ):
 
-	def __init__( self, host, key, 	handler=php,
-									action='PHPSESSID',
-									encoder=xor_gzip_encoder,
-									decoder=xor_gzip_decoder ):
+    def __init__( self, host, key,  handler='php',
+                                    action='PHPSESSID',
+                                    encoder=xor_gzip_encoder,
+                                    decoder=xor_gzip_decoder ):
+        if not host.startswith('http'): host = 'http://{}'.format( host )
+        self.domain = urlparse( host ).netloc
 
-		if not host.startswith('http'): host = 'http://{}'.format( host )
-		self.domain = urlparse( host ).netloc
+        self.session = TransportSession()
+        self.transport_field = 'cookie'
 
-		self.session = TransportSession()
-		self.transport_field = 'cookie'
-		handle = lambda *args, **kwargs : handler( *args, **kwargs )
-		self.q = lambda *args, **kwargs: query( host,
-												handle( *args, **kwargs ),
-												key,
-												session=self.session,
-												action=action,
-												encoder=encoder,
-												decoder=decoder,
-												via=self.transport_field )
+        if handler=='jsp': # XXX
+            encoder = hex_encoder
+            decoder = hex_decoder
 
-		self.last = None
+        handler = mapping()[handler]
+        handle = lambda *args, **kwargs : handler( *args, **kwargs )
+        self.q = lambda *args, **kwargs: query( host,
+                                                handle( *args, **kwargs ),
+                                                key,
+                                                session=self.session,
+                                                action=action,
+                                                encoder=encoder,
+                                                decoder=decoder,
+                                                via=self.transport_field )
 
-	def __repr__( self ):
-		return '<Session {}>'.format( self.domain )
+        self.last = None
 
-	def __call__( self, *args, **kwargs ):
-		self.last = self.q( *args, **kwargs )
-		return self.last
+    def __repr__( self ):
+        return '<Session {}>'.format( self.domain )
 
-	@property
-	def user_agent( self ):
-		return self.session.headers['user-agent']
+    def __call__( self, *args, **kwargs ):
+        self.last = self.q( *args, **kwargs )
+        return self.last
 
-	@user_agent.setter
-	def user_agent( self, value ):
-		self.session.headers['user-agent'] = value
+    @property
+    def user_agent( self ):
+        return self.session.headers['user-agent']
 
-	@property
-	def field( self ):
-		return self.transport_field
+    @user_agent.setter
+    def user_agent( self, value ):
+        self.session.headers['user-agent'] = value
 
-	@field.setter
-	def field( self, value ):
-		if value in ['cookie', 'post']:
-			self.transport_field = value
-		else:
-			raise TypeError()
-	
-	@property
-	def fields( self ):
-		return ['cookie', 'post']
+    @property
+    def field( self ):
+        return self.transport_field
+
+    @field.setter
+    def field( self, value ):
+        if value in ['cookie', 'post']:
+            self.transport_field = value
+        else:
+            raise TypeError()
+
+    @property
+    def fields( self ):
+        return ['cookie', 'post']
 
 if __name__ == "__main__":
 
-	import sys
-	sys.ps1 = '$ '
+    import sys
+    sys.ps1 = '$ '
 
-	banner = '''
-                 _______  ______ __   __  _____  _______  _____ 
-                 |       |_____/   \_/   |_____]    |    |     |
-                 |_____  |    \_    |    |          |    |_____|
-                                                                
-                      _______ _     _ _______              
-                      |______ |_____| |______ |      |     
-                      ______| |     | |______ |_____ |_____
-	'''
+    banner = '''
+             _______  ______ __   __  _____  _______  _____
+             |       |_____/   \_/   |_____]    |    |     |
+             |_____  |    \_    |    |          |    |_____|
 
-	import code
-	code.interact(local=locals(),banner=banner)
+                  _______ _     _ _______
+                  |______ |_____| |______ |      |
+                  ______| |     | |______ |_____ |_____
+    '''
+
+    import code
+    code.interact(local=locals(),banner=banner)

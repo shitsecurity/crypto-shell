@@ -1,0 +1,1 @@
+readfile('$$ARGV1');

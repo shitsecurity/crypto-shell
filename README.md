@@ -53,7 +53,7 @@ nc_mknod.sh     [ip] [port]
 php.sh          [ip] [port]
 pl.sh           [ip] [port]
 py.sh           [ip] [port]
-ruby.sh         [ip] [port]
+rb.sh           [ip] [port]
 telnet_mknod.sh [ip] [port]
 telnet_split.sh [ip] [stdin-port] [stdout-port]
 ```

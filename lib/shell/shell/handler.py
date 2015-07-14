@@ -2,7 +2,7 @@
 
 def php_exec( cmd ):
 
-    cmd = cmd.replace('\\','\\\\').replace('"','\\\"').replace('$','\\$').replace('\\$\\$','$')
+    cmd = cmd.replace('\\n','\\\\n').replace('\\','\\\\').replace('"','\\\"').replace('$','\\$').replace('\\$\\$','$')
 
     if cmd == 'ip':
         return "echo ${_SERVER['REMOTE_ADDR']}"
@@ -25,7 +25,7 @@ def php_exec( cmd ):
     return cmd
 
 def php_system():
-    return "system('{}');"
+    return 'system("{}");'
 
 def cmd_chain( language, iter ):
     return language.format(';'.join( iter )+';')

@@ -1,6 +1,6 @@
 requests
 sqlalchemy
-straight.plugin
+straight.plugin==1.4.0-post-1
 jinja2
 python-geoip-geolite2
 lxml

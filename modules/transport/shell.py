@@ -10,6 +10,7 @@ from modules.module import Module
 from lib.io import write_file, read_file, escape, echo
 from lib.io import load_script, load_script_names
 from lib.io import load_eval, load_eval_names
+from lib.io import load_backconnect, load_backconnect_names
 from lib.shell.session import Session
 
 from tempfile import NamedTemporaryFile
@@ -251,3 +252,26 @@ class Connect( InteractiveMixin, Module ):
 
     def help_clean( self ):
         print ' Usage: clean [str] [file]'
+
+    def complete_backconnect(self, text, line, b_index, e_index):
+        return self.default_complete(text, line, load_backconnect_names)
+
+    def help_backconnect( self ):
+        print ' Usage: eval [file] [[arg]]'
+
+    def do_backconnect( self, line ):
+        '''execute backconnect'''
+        args = shlex.split( line )
+        if len(args)==0:
+            self.help_backconnect()
+            return
+        try:
+            backconnect = load_backconnect(args[0])
+        except IOError:
+            msg = 'File {} not found'.format(args[0])
+            print self.pprint(marker='!').format(msg)
+            return
+        for ii, arg in enumerate(args):
+            if ii==0: continue
+            backconnect = backconnect.replace('$$ARGV{}'.format(ii), arg)
+        print self.execute_one(backconnect)

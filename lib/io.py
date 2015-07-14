@@ -42,3 +42,15 @@ def load_eval_names():
 
 def echo( data, escape="'"):
     return data.replace(escape,'{esc}\\{esc}{esc}'.format(esc=escape))
+
+def get_backconnect_dir():
+    return os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                        '..',
+                                        'data',
+                                        'backconnect'))
+
+def load_backconnect(file):
+    return read_file(os.path.join(get_backconnect_dir(), file))
+
+def load_backconnect_names():
+    return os.listdir(get_backconnect_dir())

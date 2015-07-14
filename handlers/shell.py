@@ -59,7 +59,7 @@ class ShellHandler( SQLiteHandler, PPrint ):
         try:
             return self.get_shell( id=int(param) )
         except ValueError:
-            raise NoResult()
+            raise exceptions.NoResultFound()
 
     def delete_shell_by_uniq( self, param ):
         if param.startswith('@'):
@@ -161,12 +161,7 @@ class ShellHandler( SQLiteHandler, PPrint ):
             elif k=='domain':
                 domains = []
                 for v in mv:
-                    frmt=str(v)
-                    if frmt.startswith('*'):
-                        frmt='%'+frmt[1:]
-                    if frmt.endswith('*'):
-                        frmt=frmt[:-1]+'%'
-                    domains.append(frmt)
+                    domains.append(str(v).replace('%','').replace('*','%'))
                 query = query.filter(or_(*[Shell.domain.like(_) for _ in domains]))
 
             elif k=='active':

@@ -43,6 +43,7 @@ def pad( length ):
     return os.urandom( length )
 
 def encode( payload, key, strength=None ):
+    key = key.decode('hex')
     return encrypt( pad(strength or len(key)) + payload, key )
 
 def decrypt( payload, key ):
@@ -56,6 +57,7 @@ def decrypt( payload, key ):
     return result
 
 def decode( payload, key, strength=None ):
+    key = key.decode('hex')
     return decrypt( payload, key )[strength or len(key):]
 
 def std_encoder( payload, key ):

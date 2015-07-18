@@ -40,8 +40,8 @@ global_write - find globally writeable files belonging to other users
 users        - list users
 users_home   - list contents of all $HOME dirs
 users_file   - list interesting files from all $HOME dirs
-users_write  - find writeable files in all $HOME dirs
-users_read   - find readable files in all $HOME dirs
+users_write  - find writeable files in all $HOME dirs recursively
+users_read   - find readable files in all $HOME dirs recursively
 process      - list all processes
 demo         - reference for syntax quirks(!)
 ```
@@ -52,8 +52,10 @@ nc_e.sh         [ip] [port]
 nc_mknod.sh     [ip] [port]
 php.sh          [ip] [port]
 pl.sh           [ip] [port]
+pl_sys.sh       [ip] [port]
 py.sh           [ip] [port]
 rb.sh           [ip] [port]
+rb_popen.sh     [ip] [port]
 telnet_mknod.sh [ip] [port]
 telnet_split.sh [ip] [stdin-port] [stdout-port]
 ```

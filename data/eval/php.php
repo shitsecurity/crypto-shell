@@ -1,5 +1,5 @@
 $obd = ini_get('open_basedir');
-if (trim($obd) != '' ) {
+if (trim($obd) != '') {
     echo "[!] open_basedir $obd\n";
 }
 

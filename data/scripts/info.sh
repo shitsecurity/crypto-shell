@@ -35,7 +35,7 @@ ls -ltr
 lb
 header 'Processes'
 for user in `who|cut -d' ' -f1`
-	do ps -u "$user" -o user,args,pid,ppid
+    do ps -u "$user" -o user,args,pid,ppid
 done
 
 lb

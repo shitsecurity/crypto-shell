@@ -22,11 +22,11 @@ from handlers.session import SessionHandler, NonExistentSession
 
 from straight.plugin import load
 
-class Shell( cli.Cli ):
+class Shell(cli.Cli):
 
     __VERSION__ = '0.2'
 
-    def __init__( self ):
+    def __init__(self):
         self.intro = '''{green}
          _______  ______ __   __  _____  _______  _____
          |       |_____/   \_/   |_____]    |    |     |
@@ -38,11 +38,11 @@ class Shell( cli.Cli ):
 
 
                           version {}{normal}
-        '''.format( '{}.{}' .format( color.CYAN, color.GREEN ) \
-                    .join( self.__VERSION__.split('.')),
-                    cyan = color.CYAN,
-                    green = color.GREEN,
-                    normal = color.NORMAL )
+        '''.format('{}.{}'.format(color.CYAN, color.GREEN) \
+                   .join(self.__VERSION__.split('.')),
+                   cyan = color.CYAN,
+                   green = color.GREEN,
+                   normal = color.NORMAL)
 
         default_session = 'default'
         self.set_prompt(getpass.getuser(),
@@ -50,25 +50,25 @@ class Shell( cli.Cli ):
                         os.getcwd(),
                         module='~',
                         session=default_session)
-        cli.Cli.__init__( self )
-        self.modules=dict([ ( _.__module__, _ )
-                            for _ in load('modules', subclasses=module.Module)
-                            if not _.__module__.startswith('.') ])
+        cli.Cli.__init__(self)
+        self.modules=dict([(_.__module__, _)
+                           for _ in load('modules', subclasses=module.Module)
+                           if not _.__module__.startswith('.')])
         self.handler = SessionHandler()
-        self.handler.fetch_session( name=default_session )
+        self.handler.fetch_session(name=default_session)
 
     @classmethod
-    def spawn( cls ): cls().run()
+    def spawn(cls): cls().run()
 
-    def run( self ):
+    def run(self):
         try:
             self.cmdloop()
-        except (SystemExit,KeyboardInterrupt):
-            print '\n\n {}Hack the planet!{}\n'.format(color.GREEN,color.NORMAL)
+        except (SystemExit, KeyboardInterrupt):
+            print '\n\n {}Hack the planet!{}\n'.format(color.GREEN, color.NORMAL)
 
-    def do_modules( self, line ):
+    def do_modules(self, line):
         '''show modules'''
-        args = shlex.split( line )
+        args = shlex.split(line)
         if args:
             self.help_modules()
             return
@@ -78,10 +78,10 @@ class Shell( cli.Cli ):
         if len(self.modules) == 0:
             print self.pprint(marker='!').format('No loaded modules')
 
-    def help_modules( self ):
+    def help_modules(self):
         print ' Usage: modules'
 
-    def do_sessions( self, line ):
+    def do_sessions(self, line):
         '''show sessions'''
         args = shlex.split(line)
         if args:
@@ -91,68 +91,68 @@ class Shell( cli.Cli ):
         for session in self.handler.read_session_names():
             print pretty.format(session)
 
-    def help_sessions( self ):
+    def help_sessions(self):
         print ' Usage: sessions'
 
-    def do_load( self, line ):
+    def do_load(self, line):
         '''load session'''
         args = shlex.split(line)
-        session = args[0] if( len(args)==1 ) else None
+        session = args[0] if(len(args)==1) else None
         if not session:
             self.help_load()
             return
-        self.handler.fetch_session( name=session )
-        self.set_prompt( session=session )
+        self.handler.fetch_session(name=session)
+        self.set_prompt(session=session)
 
-    def complete_load( self, text, line, b_index, e_index ):
-        return self.default_complete(text,line,self.handler.read_session_names)
+    def complete_load(self, text, line, b_index, e_index):
+        return self.default_complete(text, line, self.handler.read_session_names)
 
-    def help_load( self ):
+    def help_load(self):
         print ' Usage: load [session]'
 
-    def do_delete( self, line ):
+    def do_delete(self, line):
         '''delete session'''
         args = shlex.split(line)
-        session = args[0] if( len(args)==1 ) else None
+        session = args[0] if(len(args)==1) else None
         if not session:
             self.help_delete()
             return
         try:
-            self.handler.delete_session( name=session )
-            if( self.handler.count_sessions() == 0 ):
-                self.handler.create_session( name=session )
+            self.handler.delete_session(name=session)
+            if(self.handler.count_sessions() == 0):
+                self.handler.create_session(name=session)
         except NonExistentSession:
-            msg = 'Session {} not found'.format( session )
-            print self.pprint(marker='!').format( msg )
+            msg = 'Session {} not found'.format(session)
+            print self.pprint(marker='!').format(msg)
 
-    def help_delete( self ):
+    def help_delete(self):
         print ' Usage: delete [session]'
 
-    def complete_delete(self, text, line, b_index, e_index ):
-        return self.default_complete(text,line,self.handler.read_session_names)
+    def complete_delete(self, text, line, b_index, e_index):
+        return self.default_complete(text, line, self.handler.read_session_names)
 
-    def do_use( self, line ):
+    def do_use(self, line):
         '''use module'''
         args = shlex.split(line)
-        module = args[0] if( len(args)==1 ) else None
+        module = args[0] if(len(args)==1) else None
         if not module:
             self.help_use()
             return
         if module not in self.modules.keys():
-            msg = 'Module {} not loaded'.format( module )
-            print self.pprint(marker='!').format( msg )
+            msg = 'Module {} not loaded'.format(module)
+            print self.pprint(marker='!').format(msg)
             return
-        self.set_prompt( module=module )
-        self.modules[ self.get_module() ].spawn( self )
-        self.set_prompt( module='~' )
+        self.set_prompt(module=module)
+        self.modules[self.get_module()].spawn(self)
+        self.set_prompt(module='~')
 
-    def help_use( self ):
+    def help_use(self):
         print ' Usage: use [module]'
 
-    def complete_use( self, text, line, b_index, e_index ):
-        return self.default_complete(text,line,self.modules.keys)
+    def complete_use(self, text, line, b_index, e_index):
+        return self.default_complete(text, line, self.modules.keys)
 
-    def do_logging( self, line ):
+    def do_logging(self, line):
         '''toggle logging'''
         args = shlex.split(line)
         action = args[0] if len(args)==1 else None
@@ -160,17 +160,17 @@ class Shell( cli.Cli ):
             self.help_logging()
             return
         if action.lower()=='on':
-            log.log(level=logging.DEBUG,filename='shell.log')
+            log.log(level=logging.DEBUG, filename='shell.log')
         elif action.lower()=='off':
-            log.log(level=logging.NOTSET,filename='shell.log')
+            log.log(level=logging.NOTSET, filename='shell.log')
         else:
-            msg = 'Argument {} invalid'.format( action )
-            print self.pprint(marker='!').format( msg )
+            msg = 'Argument {} invalid'.format(action)
+            print self.pprint(marker='!').format(msg)
 
-    def help_logging( self ):
+    def help_logging(self):
         print ' Usage: logging [on|off]'
 
-    def complete_logging( self, text, line, b_index, e_index ):
+    def complete_logging(self, text, line, b_index, e_index):
         return self.default_complete(text, line, lambda: ['on','off'])
 
 if __name__ == "__main__":

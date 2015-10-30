@@ -8,14 +8,19 @@ from shell.transport import hex_decoder, hex_encoder
 
 from urlparse import urlparse
 
-class Session( object ):
+class Session(object):
 
-    def __init__( self, host, key,  handler='php',
-                                    action='PHPSESSID',
-                                    encoder=xor_gzip_encoder,
-                                    decoder=xor_gzip_decoder ):
-        if not host.startswith('http'): host = 'http://{}'.format( host )
-        self.domain = urlparse( host ).netloc
+    def __init__(self,
+                 host,
+                 key,
+                 password,
+                 handler='php',
+                 action='PHPSESSID',
+                 encoder=xor_gzip_encoder,
+                 decoder=xor_gzip_decoder):
+
+        if not host.startswith('http'): host = 'http://{}'.format(host)
+        self.domain = urlparse(host).netloc
 
         self.session = TransportSession()
         self.transport_field = 'cookie'
@@ -25,46 +30,47 @@ class Session( object ):
             decoder = hex_decoder
 
         handler = mapping()[handler]
-        handle = lambda *args, **kwargs : handler( *args, **kwargs )
-        self.q = lambda *args, **kwargs: query( host,
-                                                handle( *args, **kwargs ),
-                                                key,
-                                                session=self.session,
-                                                action=action,
-                                                encoder=encoder,
-                                                decoder=decoder,
-                                                via=self.transport_field )
+        handle = lambda *args, **kwargs : handler(*args, **kwargs)
+        self.q = lambda *args, **kwargs: query(host,
+                                               handle(*args, **kwargs),
+                                               key,
+                                               password,
+                                               session=self.session,
+                                               action=action,
+                                               encoder=encoder,
+                                               decoder=decoder,
+                                               via=self.transport_field)
 
         self.last = None
 
-    def __repr__( self ):
-        return '<Session {}>'.format( self.domain )
+    def __repr__(self):
+        return '<Session {}>'.format(self.domain)
 
-    def __call__( self, *args, **kwargs ):
-        self.last = self.q( *args, **kwargs )
+    def __call__(self, *args, **kwargs):
+        self.last = self.q(*args, **kwargs)
         return self.last
 
     @property
-    def user_agent( self ):
+    def user_agent(self):
         return self.session.headers['user-agent']
 
     @user_agent.setter
-    def user_agent( self, value ):
+    def user_agent(self, value):
         self.session.headers['user-agent'] = value
 
     @property
-    def field( self ):
+    def field(self):
         return self.transport_field
 
     @field.setter
-    def field( self, value ):
+    def field(self, value):
         if value in ['cookie', 'post']:
             self.transport_field = value
         else:
             raise TypeError()
 
     @property
-    def fields( self ):
+    def fields(self):
         return ['cookie', 'post']
 
 if __name__ == "__main__":
@@ -83,4 +89,4 @@ if __name__ == "__main__":
     '''
 
     import code
-    code.interact(local=locals(),banner=banner)
+    code.interact(local=locals(), banner=banner)

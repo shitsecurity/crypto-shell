@@ -9,14 +9,14 @@ from sqlalchemy.orm import exc as exceptions
 
 Base = declarative_base()
 
-class DBSession( object ):
+class DBSession(object):
 
     @property
     @classmethod
-    def key( cls ):
+    def key(cls):
         return cls.__class__.__name__
 
-class SQLite( DBSession ):
+class SQLite(DBSession):
 
     @staticmethod
     def create():

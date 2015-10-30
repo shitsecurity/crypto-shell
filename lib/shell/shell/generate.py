@@ -6,7 +6,10 @@ from jinja2 import Environment, PackageLoader, FileSystemLoader
 
 import os
 
-def key( strength=16 ):
+def key(strength=16):
+    return os.urandom(strength).encode('hex')
+
+def password(strength=16):
     return os.urandom(strength).encode('hex')
 
 def template_path():
@@ -15,32 +18,33 @@ def template_path():
                                         'templates'))
 
 def shell_path():
-    return os.path.join( template_path(), 'shells' )
+    return os.path.join(template_path(), 'shells')
 
 def cryptor_path():
-    return os.path.join( template_path(), 'cryptors' )
+    return os.path.join(template_path(), 'cryptors')
 
-def generate( file, path, key='', action='PHPSESSID', obfuscate=None ):
-    env = Environment( loader=FileSystemLoader( path ))
+def generate(file, path, password='', key='', action='PHPSESSID', obfuscate=None):
+    env = Environment(loader=FileSystemLoader(path))
     env.filters['base64'] = base64_encode
-    return env.get_template( file ).render( key=key,
-                                            obfs=obfuscate,
-                                            action=action )
+    return env.get_template(file).render(key=key,
+                                           password=password,
+                                           obfs=obfuscate,
+                                           action=action)
 
-def generate_shell( *args, **kwargs ):
-    return generate( *args, path=shell_path(), **kwargs )
+def generate_shell(*args, **kwargs):
+    return generate(*args, path=shell_path(), **kwargs)
 
-def generate_cryptor( *args, **kwargs ):
-    return generate( *args, path=cryptor_path(), **kwargs )
+def generate_cryptor(*args, **kwargs):
+    return generate(*args, path=cryptor_path(), **kwargs)
 
-def minify( payload ):
+def minify(payload):
     return payload.replace('\n','').replace('\t','').replace('    ','')
 
-def remove_tags( payload, open, close ):
+def remove_tags(payload, open, close):
     return payload.replace(open,'',1)[::-1].replace(close[::-1],'',1)[::-1]
 
-def remove_tags_php( payload ):
-    return remove_tags( payload, open='<?php ', close='?>' )
+def remove_tags_php(payload):
+    return remove_tags(payload, open='<?php ', close='?>')
 
 def list_shells():
     return os.listdir(shell_path())

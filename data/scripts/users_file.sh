@@ -1,8 +1,8 @@
 for x in `cat /etc/passwd | cut -d: -f1,3,6`
 do  name=`echo $x | awk -F: '{print $1}'`
-	uid=`echo "$x" | awk -F: '{print $2}'`
-	home=`echo $x | awk -F: '{print $3}'`
-	echo "$name uid=$uid home=$home"
+    uid=`echo "$x" | awk -F: '{print $2}'`
+    home=`echo $x | awk -F: '{print $3}'`
+    echo "$name uid=$uid home=$home"
     ls -lah $home -d --full-time
     ls -lah $home/.bash_profile 2>/dev/null
     ls -lah $home/.bashrc 2>/dev/null

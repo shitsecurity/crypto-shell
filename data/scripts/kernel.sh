@@ -11,6 +11,7 @@ then echo '[+] /proc enabled'
         kptr=`cat /proc/sys/kernel/kptr_restrict`
         mod_disabled=`cat /proc/sys/kernel/modules_disabled`
         smep=`grep smep /proc/cpuinfo`
+        dmesg=`grep 1 /proc/sys/kernel/dmesg_restrict`
         recovered=true
     fi
 else echo '[-] /proc disabled'
@@ -26,6 +27,7 @@ else echo "[+] sysctl: ${sysctl}"
         kptr=`${sysctl} kernel.kptr_restrict|awk '{print $3}'`
         mod_disabled=`${sysctl} kernel.modules_disabled|awk '{print $3}'`
         smep=${unknown}
+        dmesg=${unknown}
         recovered=true
     fi
 fi
@@ -53,6 +55,13 @@ then echo "[*] modprobe: ${modprobe}"
     elif [ "$smep" = ${unknown} ]
         then  echo '[!] smep status unknown'
     else echo '[-] smep enabled'
+    fi
+
+    if [ -z "$dmesg" ]
+        then echo '[+] dmesg enabled'
+    elif [ "$dmesg" = ${unknown} ]
+        then  echo '[!] dmesg status unknown'
+    else echo '[-] dmesg disabled'
     fi
 fi
 

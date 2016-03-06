@@ -50,4 +50,5 @@ def list_shells():
     return os.listdir(shell_path())
 
 def list_cryptors():
-    return os.listdir(cryptor_path())
+    return list(filter(lambda _: not _.endswith('.tpl'),
+                       os.listdir(cryptor_path())))
